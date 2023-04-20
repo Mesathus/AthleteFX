@@ -1,0 +1,48 @@
+/*
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+*/
+/* 
+    Created on : Apr 20, 2023, 12:20:35 AM
+    Author     : Mesa
+*/
+
+.label{
+    -fx-margin: 10px;    
+    -fx-padding: 10px;
+    -fx-alignment: center-right;    
+}
+
+.pane{
+    -fx-padding: 10px;
+    -fx-alignment: center;
+    -fx-grid-lines-visible: false;
+}
+
+.buttonPane{
+    -fx-padding: 10px;
+    -fx-alignment: center;
+    -fx-grid-lines-visible: false;
+}
+
+.button{
+    -fx-pref-width: 60px;
+}
+
+.rbutton{
+    -fx-padding: 10px;    
+}
+
+.text250{
+    -fx-max-width: 250px;
+    -fx-pref-width: 120px;
+}
+
+.text25{
+    -fx-max-width: 120px;
+    -fx-pref-width: 80px;
+}
+
+
+

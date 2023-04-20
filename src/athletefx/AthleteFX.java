@@ -7,6 +7,8 @@ package athletefx;
 
 import javafx.application.Application;
 import javafx.collections.FXCollections;
+import javafx.geometry.HPos;
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.layout.GridPane;
@@ -48,7 +50,10 @@ public class AthleteFX extends Application {
         GridPane topPane = new GridPane();
         GridPane midPane = new GridPane();
         GridPane botPane = new GridPane();
-        Label lblAthName = new Label("Athlete's name: ");
+        GridPane midRow1 = new GridPane();
+        GridPane midRow2 = new GridPane();
+        GridPane midRow3 = new GridPane();
+        Label lblAthName = new Label("Athlete's name: ");        
         Label lblAthSalary = new Label("Athlete's salary: ");
         Label lblProfName = new Label("Professional's name: ");
         Button btnSubmitAth = new Button("Submit");
@@ -66,13 +71,39 @@ public class AthleteFX extends Application {
         //alerts for input validation
         Alert nameErr = new Alert(Alert.AlertType.ERROR); nameErr.setContentText("Be sure to properly enter a name.");
         Alert salErr = new Alert(Alert.AlertType.ERROR); salErr.setContentText("Be sure to enter a valid number for salary.");
-        Alert jobErr = new Alert(Alert.AlertType.ERROR); jobErr.setContentText("Be sure to select a job.");
+        //dummied out alert after handling of radio buttons was changed
+        //Alert jobErr = new Alert(Alert.AlertType.ERROR); jobErr.setContentText("Be sure to select a job.");
+        
+        //disable professional entry fields until an athlete is accepted
+        btnAddProf.setDisable(true);
+        txtProfName.setDisable(true);
         
         //assigning radio buttons to the same group
         rbtnLaw.setToggleGroup(t);
         rbtnAgent.setToggleGroup(t);
         rbtnPA.setToggleGroup(t);
         rbtnTrainer.setToggleGroup(t);
+        
+        rbtnLaw.setSelected(true);
+        // </editor-fold>
+        
+        //<editor-fold defaultstate="collapsed" desc="linking styling">
+        topPane.getStyleClass().add("pane");
+        midPane.getStyleClass().add("pane");
+        midRow1.getStyleClass().add("pane");
+        midRow2.getStyleClass().add("pane");
+        midRow3.getStyleClass().add("buttonPane");
+        botPane.getStyleClass().add("pane");
+        lblAthName.getStyleClass().add("label");
+        txtAthName.getStyleClass().add("text250");        
+        txtAthSal.getStyleClass().add("text250");
+        txtProfName.getStyleClass().add("text250");
+        btnSubmitAth.getStyleClass().add("button");
+        btnAddProf.getStyleClass().add("button");
+        rbtnLaw.getStyleClass().add("rbutton");
+        rbtnPA.getStyleClass().add("rbutton");
+        rbtnAgent.getStyleClass().add("rbutton");
+        rbtnTrainer.getStyleClass().add("rbutton");
         // </editor-fold>
         
         //<editor-fold defaultstate="collapsed" desc="creating constraints">
@@ -90,6 +121,11 @@ public class AthleteFX extends Application {
         col67.setPercentWidth(67);
         col75.setPercentWidth(75);
         col12.setPercentWidth(12.5);
+        col25.setHalignment(HPos.CENTER);
+        col33.setHalignment(HPos.CENTER);
+        col50.setHalignment(HPos.CENTER);
+        col67.setHalignment(HPos.CENTER);
+        col100.setHalignment(HPos.CENTER);
         RowConstraints row25 = new RowConstraints();
         RowConstraints row50 = new RowConstraints();
         RowConstraints row20 = new RowConstraints();
@@ -100,6 +136,10 @@ public class AthleteFX extends Application {
         root.getColumnConstraints().add(col100);
         root.getRowConstraints().addAll(row25, row25, row50);
         topPane.getColumnConstraints().addAll(col25, col50, col25);
+        midPane.getColumnConstraints().addAll(col100);
+        midRow1.getColumnConstraints().addAll(col33,col67);
+        midRow2.getColumnConstraints().addAll(col25,col25,col25,col25);
+        midRow3.getColumnConstraints().addAll(col100);
         botPane.getColumnConstraints().addAll(col12, col75, col12);
         
         // </editor-fold>
@@ -110,15 +150,18 @@ public class AthleteFX extends Application {
                 try{
                     String name = null;
                     Double salary = null;
-                    if(txtAthName.getText().length() > 0) name = txtAthName.getText();
-                        else nameErr.showAndWait();
-                    if(TryParse(txtAthSal.getText())) salary = Double.parseDouble(txtAthSal.getText());
-                        else salErr.showAndWait();                    
+                    if(txtAthName.getText().length() > 0) name = txtAthName.getText();  //check a name is entered
+                        else nameErr.showAndWait();                    
+                    if(TryParse(txtAthSal.getText())) salary = Double.parseDouble(txtAthSal.getText());  //validate salary
+                        else salErr.showAndWait();                                      // salary > value check for minimum amount can be added here
                     if(ath.SetName(name) && ath.SetSalary(salary))
                     {
+                        //adjust which fields are available after name/salary are confirmed
                         btnSubmitAth.setDisable(true);
                         txtAthName.setDisable(true);
                         txtAthSal.setDisable(true);
+                        btnAddProf.setDisable(false);
+                        txtProfName.setDisable(false);
                     }
                 }
                 catch(Exception ex){
@@ -130,15 +173,12 @@ public class AthleteFX extends Application {
                 try{
                     String name = null;
                     Double athSal;
-                    String job = null;
-                    if(txtAthName.getText().length() > 0) name = txtProfName.getText();
+                    String job;
+                    if(txtAthName.getText().length() > 0) name = txtProfName.getText();  //check a name is entered
                         else nameErr.showAndWait();
-                    athSal = Double.parseDouble(txtAthSal.getText());
-                    if(rbtnLaw.isSelected()) job = rbtnLaw.getText();
-                    else if(rbtnPA.isSelected()) job = rbtnPA.getText();
-                    else if(rbtnTrainer.isSelected()) job = rbtnTrainer.getText();
-                    else if(rbtnAgent.isSelected()) job = rbtnAgent.getText();
-                    else jobErr.showAndWait();
+                    athSal = ath.Salary();
+                    //we force lawyer to start toggled else this can throw errors
+                    job = ((RadioButton)t.getSelectedToggle()).getText();  //get the current toggled radiobutton using a typecast
                     if(profList.Insert(name, job, athSal)){
                         listProfs.setItems(FXCollections.observableArrayList(profList.Items()));
                     }
@@ -158,21 +198,26 @@ public class AthleteFX extends Application {
         topPane.add(txtAthSal, 1, 3);
         topPane.add(btnSubmitAth, 2, 2);
         
-        midPane.add(lblProfName, 1, 0);
-        midPane.add(txtProfName, 2, 0);
-        midPane.add(rbtnLaw, 0, 1);
-        midPane.add(rbtnAgent, 1, 1);
-        midPane.add(rbtnPA, 2, 1);
-        midPane.add(rbtnTrainer, 3, 1);
-        midPane.add(btnAddProf, 1, 2);
+        midRow1.add(lblProfName, 0, 0);
+        midRow1.add(txtProfName, 1, 0);        
+        midRow2.add(rbtnLaw, 0, 0);
+        midRow2.add(rbtnAgent, 1, 0);
+        midRow2.add(rbtnPA, 2, 0);
+        midRow2.add(rbtnTrainer, 3, 0);
+        midRow3.add(btnAddProf, 0, 0);
+        midPane.add(midRow1,0,0);
+        midPane.add(midRow2,0,1);
+        midPane.add(midRow3,0,2);
         
         botPane.add(listProfs, 1,0);
         
         root.add(topPane, 0, 0);
         root.add(midPane, 0, 1);
-        root.add(botPane,0,2);
+        root.add(botPane, 0, 2);
         // </editor-fold>
-        Scene athScene = new Scene(root, 500, 700);
+        
+        Scene athScene = new Scene(root, 600, 700);
+        athScene.getStylesheets().add(AthleteFX.class.getResource("athleteStyles.css").toString());
         return athScene;
     }
     
