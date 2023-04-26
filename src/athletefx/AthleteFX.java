@@ -85,6 +85,7 @@ public class AthleteFX extends Application {
         rbtnTrainer.setToggleGroup(t);
         
         rbtnLaw.setSelected(true);
+        rbtnAgent.setSelected(false);
         // </editor-fold>
         
         //<editor-fold defaultstate="collapsed" desc="linking styling">
